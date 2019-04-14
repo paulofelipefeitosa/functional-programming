@@ -1,2 +1,2 @@
 # functional-programming
-Some algorithms and data structures implementations with Haskell 
+Implementation of algorithms and data structures with Haskell.
