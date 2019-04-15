@@ -2,21 +2,31 @@ module BinaryTree(
     BinaryTree(..),
     sizeBST,
     isBST,
-    insert
+    insert,
+    successor,
+    predecessor
     ) where 
+
+import Utils.Triple as Triple
 
 data BinaryTree a = NIL | Node a (BinaryTree a) (BinaryTree a) deriving (Eq,Show)
 
 leftChild NIL = NIL
 leftChild (Node _ left _) = left
+
 rightChild NIL = NIL
 rightChild (Node _ _ right) = right
+
+getValue NIL = error "Cannot get value from a NIL Node"
+getValue (Node key _ _) = key
 
 sizeBST NIL = 0
 sizeBST (Node a left right) = 1 + sizeBST left + sizeBST right
 
 --verifica se uma BT é uma BST
-isBST = undefined
+isBST bst = tripleFst (inIsBST bst)
+
+inIsBST (Node key left right) = (Triple False 10 20)
 
 --insere uma nova chave na BST retornando a BST modificada
 insert NIL value = (Node value (NIL) (NIL))
@@ -49,14 +59,28 @@ minBST (Node key NIL right) = key
 minBST (Node key left right) = minBST left
 
 --retorna o predecessor de um elemento da BST, caso o elemento esteja na BST
-predecessor bst value 
-    | node == NIL = error "BST does not contains " ++ show value
-    | otherwise = minBST (rightChild node)
+predecessor bst value
+    | node == NIL = error "BST does not contains " ++ show value ++ " value"
+    | otherwise = getValue (inPredecessor bst value)
     where
         node = search bst value
 
+inPredecessor (Node key left right) value
+    | key == value = if left == NIL then NIL else (Node (maxBST left) NIL NIL)
+    | key > value = inPredecessor left value
+    | otherwise = let rans = inPredecessor right value in if rans == NIL then (Node key NIL NIL) else rans
+
 --retorna o sucessor de um elemento da BST, caso o elemento esteja na BST
-successor = undefined
+successor bst value
+    | node == NIL = error "BST does not contains " ++ show value ++ " value"
+    | otherwise = getValue (inSuccessor bst value)
+    where
+        node = search bst value
+
+inSuccessor (Node key left right) value
+    | key == value = if right == NIL then NIL else (Node (minBST right) NIL NIL)
+    | key < value = inSuccessor right value
+    | otherwise = let rans = inSuccessor left value in if rans == NIL then (Node key NIL NIL) else rans
 
 --remove ume lemento da BST
 remove = undefined

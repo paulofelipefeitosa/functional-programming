@@ -1,13 +1,20 @@
+module Utils.Triple(
+    Triple(..),
+    tripleFst,
+    tripleSnd,
+    tripleThr
+    ) where
+
 data Triple a b c = Nada | Triple a b c deriving (Eq,Show)
 
 tripleFst (Nada) = error "Cannot get 'tripleFst' from Nothing"
-tripleFst (Triple a b c) = a
+tripleFst (Triple a _ _) = a
 tripleSnd (Nada) = error "Cannot get 'tripleFst' from Nothing"
-tripleSnd (Triple a b c) = b
+tripleSnd (Triple _ b _) = b
 tripleThr (Nada) = error "Cannot get 'tripleFst' from Nothing"
-tripleThr (Triple a b c) = c
+tripleThr (Triple _ _ c) = c
 
-data Quadruple a b = Quadruple a a b b | Vazio deriving (Eq,Show)
+{-data Quadruple a b = Quadruple a a b b | Vazio deriving (Eq,Show)
 
 firstTwo (Quadruple a b c d) = (a, b)
 secondTwo (Quadruple a b c d) = (c, d)
@@ -30,11 +37,4 @@ tuple3 _ = Nothing
 
 tuple4 (Tuple4 _ _ _ d) = d
 tuple4 _ = Nothing
-
-main = do
-    print (tripleFst (Triple 10 20 30))
-    print (tripleSnd (Triple 10 20 30))
-    print (tripleThr (Triple 10 20 30))
-    print (firstTwo (Quadruple 10 20 "paulo" "felipe"))
-    print (secondTwo (Quadruple 10 20 "paulo" "felipe"))
-    
+-}
