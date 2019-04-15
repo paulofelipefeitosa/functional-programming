@@ -26,7 +26,35 @@ sizeBST (Node a left right) = 1 + sizeBST left + sizeBST right
 --verifica se uma BT é uma BST
 isBST bst = tripleFst (inIsBST bst)
 
-inIsBST (Node key left right) = (Triple False 10 20)
+inIsBST (Node key NIL NIL) = (Triple True key key)
+inIsBST (Node key left NIL) 
+    | lIsBST == True && key > lMaxKey = (Triple True lMinKey key)
+    | otherwise = (Triple False lMinKey lMaxKey)
+    where
+        leftAns = inIsBST left
+        lIsBST = tripleFst leftAns
+        lMinKey = tripleSnd leftAns
+        lMaxKey = tripleThr leftAns
+inIsBST (Node key NIL right)
+    | rIsBST == True && key < rMinKey = (Triple True key rMaxKey)
+    | otherwise = (Triple False rMinKey rMaxKey)
+    where
+        rightAns = inIsBST right
+        rIsBST = tripleFst rightAns
+        rMinKey = tripleSnd rightAns
+        rMaxKey = tripleThr rightAns
+inIsBST (Node key left right)
+    | rIsBST == True && lIsBST == True && key > lMaxKey && key < rMinKey = (Triple True lMinKey rMaxKey)
+    | otherwise = (Triple False lMinKey rMaxKey) 
+    where
+        leftAns = inIsBST left
+        lIsBST = tripleFst leftAns
+        lMinKey = tripleSnd leftAns
+        lMaxKey = tripleThr leftAns
+        rightAns = inIsBST right
+        rIsBST = tripleFst rightAns
+        rMinKey = tripleSnd rightAns
+        rMaxKey = tripleThr rightAns
 
 --insere uma nova chave na BST retornando a BST modificada
 insert NIL value = (Node value (NIL) (NIL))
