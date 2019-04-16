@@ -114,6 +114,11 @@ inSuccessor (Node key left right) value
 remove = undefined
 
 --retorna uma lista com os dados da BST nos diversos tipos de caminhamento
-preOrder = undefined
-order = undefined
-postOrder = undefined
+preOrder NIL = []
+preOrder (Node key left right) = [key] ++ preOrder left ++ preOrder right
+
+order NIL = []
+order (Node key left right) = order left ++ [key] ++ order right
+
+postOrder NIL = []
+postOrder (Node key left right) = postOrder left ++ postOrder right ++ [key]
