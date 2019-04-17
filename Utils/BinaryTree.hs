@@ -4,7 +4,15 @@ module BinaryTree(
     isBST,
     insert,
     successor,
-    predecessor
+    predecessor,
+    remove,
+    leftChild,
+    rightChild,
+    getValue,
+    search,
+    preOrder,
+    order,
+    postOrder
     ) where 
 
 import Utils.Triple as Triple
@@ -86,6 +94,11 @@ minBST NIL = error "Cannot get minimum element from a NIL BinaryTree"
 minBST (Node key NIL right) = key
 minBST (Node key left right) = minBST left
 
+--retorna o elemento minimo da BST
+minBSTNode NIL = NIL
+minBSTNode (Node key NIL right) = (Node key NIL right)
+minBSTNode (Node key left right) = minBSTNode left
+
 --retorna o predecessor de um elemento da BST, caso o elemento esteja na BST
 predecessor bst value
     | node == NIL = error "BST does not contains " ++ show value ++ " value"
@@ -110,8 +123,23 @@ inSuccessor (Node key left right) value
     | key < value = inSuccessor right value
     | otherwise = let rans = inSuccessor left value in if rans == NIL then (Node key NIL NIL) else rans
 
---remove ume lemento da BST
-remove = undefined
+--remove um elemento da BST
+remove NIL value = NIL
+remove (Node key NIL NIL) value
+    | key == value = NIL
+    | otherwise = (Node key NIL NIL)
+remove (Node key left NIL) value
+    | key == value = left
+    | value < key = (Node key (remove left value) NIL)
+    | otherwise = (Node key left NIL)
+remove (Node key NIL right) value
+    | key == value = right
+    | value > key = (Node key NIL (remove right value))
+    | otherwise = (Node key NIL right)
+remove (Node key left right) value
+    | key == value = let minNodeValue = getValue (minBSTNode right) in (Node minNodeValue left (remove right minNodeValue))
+    | value < key = (Node key (remove left value) right)
+    | otherwise = (Node key left (remove right value))
 
 --retorna uma lista com os dados da BST nos diversos tipos de caminhamento
 preOrder NIL = []
