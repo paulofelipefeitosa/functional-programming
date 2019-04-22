@@ -12,7 +12,7 @@ module MultisetList ()
  -}
 import qualified Data.List as List 
 
-data MultisetList a = MultisetList [(a,Int)] deriving (Show)
+data MultisetList a = MultisetList [(a,Int)] deriving (Eq,Show)
 
 {-
  - Insere um elemento na estrutura. Caso o elemento ja existe, sua quantidade na estrutura sera incrementada.
