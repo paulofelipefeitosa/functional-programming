@@ -10,17 +10,20 @@ module MultisetList ()
  - cada elemento da lista consiste do dado em si e sua quantidade (um par). 
  - Eh recomendavel que voce consulte a documentacao de Data.List
  -}
-import qualified Data.List as List 
+import qualified Data.List as List
+import Prelude hiding (sum) 
+import qualified Multiset as Multiset
 
 data MultisetList a = MultisetList [(a,Int)] deriving (Eq,Show)
 
 {-
  - Insere um elemento na estrutura. Caso o elemento ja existe, sua quantidade na estrutura sera incrementada.
  -}
-insert elem (MultisetList []) = MultisetList [(elem, 1)]
-insert elem (MultisetList list) = MultisetList (List.insert (elem, xq+1) (List.delete (elem, xq) list))
-    where
-        xq = search elem (MultisetList list)
+instance Multiset.Multiset (MultisetList a) where
+    insert elem (MultisetList []) = MultisetList [(elem, 1)]
+    insert elem (MultisetList list) = MultisetList (List.insert (elem, xq+1) (List.delete (elem, xq) list))
+        where
+            xq = search elem (MultisetList list)
 
 {-
 - Remove um elemento da estrutura, levando em consideracao a manipulacao de sua quantidade na estrutura. 
@@ -110,12 +113,12 @@ mlConcat (MultisetList bag) (MultisetList otherBag) = MultisetList (bag ++ other
 {-
  - Realiza a soma deste Bag com otherBag. A soma de dois bags contem os elementos dos dois bags com suas quantidades somadas. 
  -}
-mlSum bag (MultisetList []) = bag
-mlSum (MultisetList []) bag = bag
-mlSum (MultisetList ((x,xq):xs)) (MultisetList ((y,yq):ys))
-    | x == y = mlConcat (MultisetList [(x,xq + yq)]) (mlSum (MultisetList xs) (MultisetList ys))
-    | x < y = mlConcat (MultisetList [(x,xq)]) (mlSum (MultisetList xs) (MultisetList ((y,yq):ys)))
-    | otherwise = mlConcat (MultisetList [(y,yq)]) (mlSum (MultisetList ((x,xq):xs)) (MultisetList ys))
+sum bag (MultisetList []) = bag
+sum (MultisetList []) bag = bag
+sum (MultisetList ((x,xq):xs)) (MultisetList ((y,yq):ys))
+    | x == y = mlConcat (MultisetList [(x,xq + yq)]) (sum (MultisetList xs) (MultisetList ys))
+    | x < y = mlConcat (MultisetList [(x,xq)]) (sum (MultisetList xs) (MultisetList ((y,yq):ys)))
+    | otherwise = mlConcat (MultisetList [(y,yq)]) (sum (MultisetList ((x,xq):xs)) (MultisetList ys))
 
 {-
  - Retorna a quantidade total de elementos no Bag
