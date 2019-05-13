@@ -11,6 +11,7 @@ module MultisetList ()
  - Eh recomendavel que voce consulte a documentacao de Data.List
  -}
 import qualified Data.List as List
+import Control.Exception
 import Prelude hiding (sum) 
 import qualified Multiset as Multiset
 
@@ -29,10 +30,10 @@ instance Multiset.Multiset MultisetList where
 - Remove um elemento da estrutura, levando em consideracao a manipulacao de sua quantidade na estrutura. 
 - Caso a quantidade atinja 0 (ou menos), o elemento deve realmente ser removido da estrutura
 -}
-    remove elem (MultisetList []) = MultisetList []
     remove elem (MultisetList list)
-        | xq <= 1 = MultisetList (List.delete (elem, xq) list)
-        | otherwise = MultisetList (List.insert (elem, xq-1) (List.delete (elem, xq) list))
+        | xq == 0 = throwIO (Multiset.ElementoInexistente ("Cannot remove " ++ show elem))
+        | xq == 1 = return (MultisetList (List.delete (elem, xq) list))
+        | otherwise = return (MultisetList (List.insert (elem, xq-1) (List.delete (elem, xq) list)))
         where
             xq = Multiset.search elem (MultisetList list)
 
@@ -88,13 +89,13 @@ instance Multiset.Multiset MultisetList where
      Caso essa quantidade seja negativa o elemento deve serremovido do Bag. 
      Por exemplo, seja A = {(a,3),(b,1)} e B = {(b,2),(a,1)}. Assim, A.minus(B) deixa A = {(a,2)}.
 -}
-    minus bag (MultisetList []) = bag
-    minus (MultisetList []) bag = (MultisetList [])
+    minus bag (MultisetList []) = return bag
+    minus (MultisetList []) bag = return (MultisetList [])
     minus (MultisetList ((x,xq):xs)) (MultisetList ((y,yq):ys))
-        | x == y = if (yq >= xq) 
-            then Multiset.minus (MultisetList xs) (MultisetList ys)
-            else mlConcat (MultisetList [(x,xq - yq)]) (Multiset.minus (MultisetList xs) (MultisetList ys))
-        | x < y = mlConcat (MultisetList [(x,xq)]) (Multiset.minus (MultisetList xs) (MultisetList ((y,yq):ys)))
+        | x == y && xq < yq = throwIO (Multiset.OperacaoNaoPermitida (show x ++ " in the first bag has less occurrences [" ++ show xq ++ "] than second bag [" ++ show yq ++ "]"))
+        | x == y && xq == yq = Multiset.minus (MultisetList xs) (MultisetList ys)
+        | x == y && xq > yq = return (mlConcat (MultisetList [(x,xq - yq)]) (Multiset.minus (MultisetList xs) (MultisetList ys)))
+        | x < y = return (mlConcat (MultisetList [(x,xq)]) (Multiset.minus (MultisetList xs) (MultisetList ((y,yq):ys))))
         | otherwise = Multiset.minus (MultisetList ((x,xq):xs)) (MultisetList ys)
 
 {-
@@ -125,4 +126,5 @@ instance Multiset.Multiset MultisetList where
     size (MultisetList []) = 0
     size (MultisetList ((x,xq):xs)) = xq + (Multiset.size (MultisetList xs))
 
-mlConcat (MultisetList bag) (MultisetList otherBag) = MultisetList (bag ++ otherBag)
+mlConcat :: MultisetList bag -> IO (MultisetList bag) -> IO (MultisetList bag)
+mlConcat (MultisetList bag) (MultisetList otherBag) = return (MultisetList (bag ++ otherBag))

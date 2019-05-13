@@ -1,13 +1,20 @@
-module Multiset(Multiset(..))
+module Multiset(Multiset(..),
+    MultisetException(..))
     where
 
+import Control.Exception
+
+data MultisetException = ElementoInexistente [Char] | OperacaoNaoPermitida [Char] deriving (Show)
+
+instance Exception MultisetException
+
 class Multiset bag where
-    insert :: (Ord elem) => elem -> bag elem -> bag elem
-    remove :: (Ord elem) => elem -> bag elem -> bag elem
-    search :: (Ord elem) => elem -> bag elem -> Int
-    union :: (Ord elem) => bag elem -> bag elem -> bag elem
-    intersection :: (Ord elem) => bag elem -> bag elem -> bag elem
-    minus :: (Ord elem) => bag elem -> bag elem -> bag elem
-    inclusion :: (Ord elem) => bag elem -> bag elem -> Bool
-    sum :: (Ord elem) => bag elem -> bag elem -> bag elem
-    size :: (Ord elem) => bag elem -> Int
+    insert :: (Ord elem, Show elem) => elem -> bag elem -> bag elem
+    remove :: (Ord elem, Show elem) => elem -> bag elem -> IO (bag elem)
+    search :: (Ord elem, Show elem) => elem -> bag elem -> Int
+    union :: (Ord elem, Show elem) => bag elem -> bag elem -> bag elem
+    intersection :: (Ord elem, Show elem) => bag elem -> bag elem -> bag elem
+    minus :: (Ord elem, Show elem) => bag elem -> bag elem -> IO (bag elem)
+    inclusion :: (Ord elem, Show elem) => bag elem -> bag elem -> Bool
+    sum :: (Ord elem, Show elem) => bag elem -> bag elem -> bag elem
+    size :: (Ord elem, Show elem) => bag elem -> Int
